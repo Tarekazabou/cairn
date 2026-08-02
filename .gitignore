@@ -12,3 +12,6 @@ Thumbs.db
 coverage/
 docs/spikes/*/scratch/
 target/
+test-results/
+playwright-report/
+playwright/.cache/
