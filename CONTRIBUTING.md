@@ -16,7 +16,8 @@ Rust service (`services/extraction`) is a separate toolchain — install Rust vi
 - `pnpm typecheck` — tsc across all TS packages
 - `pnpm lint` — ESLint
 - `pnpm format` / `pnpm format:check` — Prettier
-- `pnpm test` — Vitest across all TS packages
+- `pnpm test` — Vitest unit tests across all TS packages
+- `pnpm test:e2e` — Playwright: builds the extension and loads it in real Chromium to confirm it's a valid, loadable extension (kept separate from `pnpm test` deliberately — different layer of the test pyramid, see docs/roadmap.md Phase 4)
 - `pnpm build` — build all TS packages + the extension
 
 ## Commit convention
