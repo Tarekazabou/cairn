@@ -34,7 +34,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: npx playwright install --with-deps chromium
+      - run: pnpm --filter @cairn/extension exec playwright install --with-deps chromium
       - run: pnpm --filter @cairn/extension run test:e2e
 
   rust:
