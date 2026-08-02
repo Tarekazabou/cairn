@@ -1,0 +1,16 @@
+{
+  "name": "@cairn/extension",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "dev": "vite build --watch",
+    "build": "vite build && node scripts/copy-static.mjs",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.2.5",
+    "vite": "^8.2.0"
+  }
+}
