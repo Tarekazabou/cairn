@@ -40,7 +40,7 @@ Not really applicable in Cairn's favor: every item carries `sourceMessageIds` an
 
 **Does message content leave the device?** Yes, necessarily, to `services/extraction` for the LLM call. Scope is limited to conversations the user has explicitly opted in to (non-negotiable, problem-statement.md §5) — no full-history indexing (non-goal #5).
 
-**To whom:** the self-hosted Rust service, then a third-party LLM provider as part of the extraction call. **Vendor not yet chosen** — this threat model can't name the actual data-processing terms until ADR-0001's open question (LLM provider) is resolved.
+**To whom:** the self-hosted Rust service, then OpenRouter (routing to `openai/gpt-oss-20b:free`) as part of the extraction call, per ADR-0001's addendum. **Caveat carried over from that ADR, not resolved here:** free-tier models commonly have looser data-retention/training-use policies than paid, DPA-backed ones. Acceptable for development, but must be revisited before real dogfooding on genuine colleague conversations, not just before public beta.
 
 **Encrypted how:** TLS in transit on both hops. At-rest encryption on the service is a hosting-provider question, also unresolved (ADR-0001 open question: hosting).
 
@@ -79,6 +79,6 @@ It could **not** reach into the browser, IndexedDB, or other tabs — there is n
 
 ## Open questions carried forward
 
-- LLM provider choice (ADR-0001) — determines the actual data-processing terms this document currently only describes in the abstract.
+- Whether to move off the free OpenRouter model before any real (non-synthetic) conversation is ever sent to it (ADR-0001) — the actual data-processing terms this document describes above are weaker than they'd be for a paid provider.
 - Hosting provider for `services/extraction` (ADR-0001) — determines the real at-rest encryption and retention story.
 - Formal DPIA — not written.
