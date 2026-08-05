@@ -16,7 +16,11 @@ pub struct ExtractResponse {
 /// is non-negotiable on every variant — it's what the deep-link-to-source-message
 /// trust story depends on.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(
+    tag = "type",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase"
+)]
 pub enum ExtractedItem {
     Task {
         text: String,
