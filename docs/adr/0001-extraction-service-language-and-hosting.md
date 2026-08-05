@@ -37,7 +37,15 @@ This means:
 - **CORS and auth** between the extension and the service must be handled explicitly (Supabase Edge Functions provide some of this by convention; a bare Rust service does not).
 - Threat model (`docs/security/threat-model.md`, not yet written) needs to account for this service as its own trust boundary, same as it would have for an Edge Function — the "what happens if the extraction backend is compromised" question in roadmap.md Phase 1 applies unchanged.
 
+## Addendum — 2026-08-04: LLM provider chosen
+
+**OpenRouter**, model `openai/gpt-oss-20b:free` (configurable via `OPENROUTER_MODEL`), per explicit project decision. Web framework: axum, confirmed (was tentative in the original Phase 2 scaffold, now load-bearing in the real `/extract` implementation).
+
+Verified independently of the Rust build (see below): a direct `curl` call to `https://openrouter.ai/api/v1/chat/completions` with this model, given a two-message sample conversation, correctly returned the task with the right assignee as strict JSON matching the intended schema. This confirms the provider/model choice is viable, separately from whether the Rust service compiles.
+
+**Honest caveat, not yet resolved:** OpenRouter is a router in front of many underlying model providers, and free-tier models commonly have different (often looser) data-retention/training-use policies than paid ones. `docs/security/threat-model.md`'s "what happens to message content sent to the LLM provider" answer is **weaker** for a free model than it would be for a paid, DPA-backed one. This is acceptable for development/testing, given messages are still limited to conversations the user has opted in to — but **must be revisited before any real dogfooding on genuine colleague conversations**, not just before public beta.
+
 ## Open questions
 
-- Hosting provider for `services/extraction` — not yet chosen.
-- Web framework within Rust (axum is the default assumption in the Phase 2 scaffold below; not formally decided, easy to revisit before real logic lands in Phase 3 M2).
+- Hosting provider for `services/extraction` — not yet chosen. (Provider/model for the LLM call itself is chosen, above — this is about where the Rust binary runs.)
+- Whether to stay on a free OpenRouter model past initial development, given the data-policy caveat above.
