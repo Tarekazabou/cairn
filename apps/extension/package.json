@@ -11,6 +11,10 @@
     "pretest:e2e": "pnpm run build",
     "test:e2e": "playwright test"
   },
+  "dependencies": {
+    "@cairn/adapters": "workspace:*",
+    "@cairn/core": "workspace:*"
+  },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/chrome": "^0.2.5",

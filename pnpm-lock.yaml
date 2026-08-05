@@ -40,6 +40,13 @@ importers:
         version: 4.1.10(@types/node@26.1.2)(vite@8.2.0(@types/node@26.1.2)(jiti@2.6.1))
 
   apps/extension:
+    dependencies:
+      '@cairn/adapters':
+        specifier: workspace:*
+        version: link:../../packages/adapters
+      '@cairn/core':
+        specifier: workspace:*
+        version: link:../../packages/core
     devDependencies:
       '@playwright/test':
         specifier: ^1.62.1
