@@ -59,18 +59,23 @@ async fn extract(
     State(state): State<AppState>,
     Json(request): Json<ExtractRequest>,
 ) -> Result<Json<ExtractResponse>, (StatusCode, String)> {
-    state.llm.extract(&request).await.map(Json).map_err(|error| match error {
-        LlmError::Request(_) => (
-            StatusCode::BAD_GATEWAY,
-            "extraction backend unreachable".to_string(),
-        ),
-        LlmError::NoCompletion => (
-            StatusCode::BAD_GATEWAY,
-            "extraction backend returned no completion".to_string(),
-        ),
-        LlmError::InvalidShape(detail) => (
-            StatusCode::BAD_GATEWAY,
-            format!("extraction backend returned invalid output after retry: {detail}"),
-        ),
-    })
+    state
+        .llm
+        .extract(&request)
+        .await
+        .map(Json)
+        .map_err(|error| match error {
+            LlmError::Request(_) => (
+                StatusCode::BAD_GATEWAY,
+                "extraction backend unreachable".to_string(),
+            ),
+            LlmError::NoCompletion => (
+                StatusCode::BAD_GATEWAY,
+                "extraction backend returned no completion".to_string(),
+            ),
+            LlmError::InvalidShape(detail) => (
+                StatusCode::BAD_GATEWAY,
+                format!("extraction backend returned invalid output after retry: {detail}"),
+            ),
+        })
 }

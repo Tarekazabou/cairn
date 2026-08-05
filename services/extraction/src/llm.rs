@@ -25,7 +25,9 @@ pub enum LlmError {
     Request(#[from] reqwest::Error),
     #[error("LLM provider returned no completion")]
     NoCompletion,
-    #[error("LLM response was not valid JSON matching the expected schema, even after one retry: {0}")]
+    #[error(
+        "LLM response was not valid JSON matching the expected schema, even after one retry: {0}"
+    )]
     InvalidShape(String),
 }
 
