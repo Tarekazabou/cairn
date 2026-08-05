@@ -7,6 +7,54 @@
       body {
         font-family: system-ui, sans-serif;
         padding: 1rem;
+        font-size: 14px;
+      }
+      h1 {
+        font-size: 1.1rem;
+      }
+      h2 {
+        font-size: 0.85rem;
+        color: #555;
+        margin-top: 1.5rem;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-bottom: 1px solid #eee;
+      }
+      li[data-status="dismissed"] {
+        opacity: 0.5;
+      }
+      .type-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #446;
+      }
+      .item-text {
+        flex: 1 1 auto;
+        min-width: 10rem;
+      }
+      .assignee {
+        color: #666;
+        font-size: 0.85rem;
+      }
+      .status-badge {
+        font-size: 0.7rem;
+        color: #888;
+      }
+      .sources a {
+        font-size: 0.75rem;
+      }
+      button {
+        font-size: 0.75rem;
       }
     </style>
   </head>
