@@ -1,14 +1,20 @@
 import type { StoredItem } from "@cairn/core";
 
-const TYPE_LABELS: Record<StoredItem["type"], string> = {
-  task: "Task",
-  decision: "Decision",
-  openQuestion: "Open Question",
-  idea: "Idea",
-};
-
 export function typeLabel(type: StoredItem["type"]): string {
-  return TYPE_LABELS[type];
+  // A Record<K, V> lookup still returns V | undefined under
+  // noUncheckedIndexedAccess, even when the key is statically known to be a
+  // member of K — switch avoids the indexed access, and gets exhaustiveness
+  // checking on the union as a bonus.
+  switch (type) {
+    case "task":
+      return "Task";
+    case "decision":
+      return "Decision";
+    case "openQuestion":
+      return "Open Question";
+    case "idea":
+      return "Idea";
+  }
 }
 
 /** Grouped in insertion order, not sorted — conversation order is meaningful
