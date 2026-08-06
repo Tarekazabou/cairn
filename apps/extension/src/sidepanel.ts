@@ -28,6 +28,7 @@ async function main(): Promise<void> {
   heading.textContent = "Cairn";
 
   const extractButton = document.createElement("button");
+  extractButton.id = "extract-button";
   extractButton.textContent = "Extract now (test)";
   extractButton.title =
     "Sends a synthetic sample conversation to services/extraction — not live Google Chat, Spike A hasn't run yet.";
@@ -35,22 +36,25 @@ async function main(): Promise<void> {
   const extractStatus = document.createElement("span");
   extractStatus.className = "extract-status";
 
+  const header = document.createElement("header");
+  header.append(heading, extractButton, extractStatus);
+
   const list = document.createElement("div");
   list.id = "triage-list";
 
-  root.replaceChildren(heading, extractButton, extractStatus, list);
+  root.replaceChildren(header, list);
 
   const db = await openDatabase();
 
-  let items = await getAllItems(db);
-  if (items.length === 0) {
-    // First run, nothing extracted yet — seed fixture data so the panel has
-    // something to show. Real extraction populates this store for real;
-    // fixtures only fill an empty database.
+  // Fixture data only ever loads on request (?seed=fixtures), for the E2E
+  // test and manual dev poking — never automatically, so a real user's panel
+  // starts genuinely empty rather than showing sample data as if it were real.
+  if (new URLSearchParams(location.search).has("seed")) {
     await putItems(db, FIXTURE_ITEMS);
     await putMessageLinks(db, FIXTURE_MESSAGE_LINKS);
-    items = await getAllItems(db);
   }
+
+  let items = await getAllItems(db);
 
   const editingIds = new Set<string>();
 

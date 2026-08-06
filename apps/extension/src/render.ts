@@ -23,8 +23,15 @@ export function renderTriageList(
   container.replaceChildren();
 
   if (items.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "Nothing extracted yet.";
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    const message = document.createElement("p");
+    message.textContent = "Nothing extracted yet.";
+    const hint = document.createElement("p");
+    hint.className = "empty-hint";
+    hint.textContent =
+      'Use "Extract now" above to try it on a sample conversation.';
+    empty.append(message, hint);
     container.append(empty);
     return;
   }
@@ -55,45 +62,60 @@ function renderItem(
   handlers: TriageHandlers,
 ): HTMLLIElement {
   const li = document.createElement("li");
+  li.className = "item-card";
   li.dataset.status = item.status;
   li.dataset.itemId = item.id;
 
+  const header = document.createElement("div");
+  header.className = "item-header";
+
   const badge = document.createElement("span");
-  badge.className = "type-badge";
+  badge.className = `type-badge type-${item.type}`;
   badge.textContent = typeLabel(item.type);
-  li.append(badge);
+  header.append(badge);
+
+  const status = document.createElement("span");
+  status.className = `status-badge status-${item.status}`;
+  status.textContent = item.status;
+  header.append(status);
+
+  li.append(header);
+
+  const body = document.createElement("div");
+  body.className = "item-body";
 
   if (isEditing) {
     const input = document.createElement("input");
     input.type = "text";
     input.value = item.text;
     input.className = "edit-input";
-    li.append(input);
+    body.append(input);
 
     const save = document.createElement("button");
+    save.className = "btn btn-primary";
     save.textContent = "Save";
     save.addEventListener("click", () =>
       handlers.onSaveEdit(item.id, input.value),
     );
-    li.append(save);
+    body.append(save);
   } else {
     const text = document.createElement("span");
     text.className = "item-text";
     text.textContent = item.text;
-    li.append(text);
+    body.append(text);
 
     if (item.type === "task" && item.assignee) {
       const assignee = document.createElement("span");
       assignee.className = "assignee";
       assignee.textContent = `→ ${item.assignee}`;
-      li.append(assignee);
+      body.append(assignee);
     }
   }
 
-  const status = document.createElement("span");
-  status.className = "status-badge";
-  status.textContent = item.status;
-  li.append(status);
+  li.append(body);
+
+  const footer = document.createElement("div");
+  footer.className = "item-footer";
 
   const sources = document.createElement("span");
   sources.className = "sources";
@@ -105,12 +127,16 @@ function renderItem(
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.textContent = "source";
-    sources.append(link, document.createTextNode(" "));
+    sources.append(link);
   }
-  li.append(sources);
+  footer.append(sources);
+
+  const actions = document.createElement("span");
+  actions.className = "actions";
 
   if (!isEditing) {
     const editButton = document.createElement("button");
+    editButton.className = "btn";
     editButton.textContent = "Edit";
     editButton.disabled = item.status === "dismissed";
     editButton.addEventListener("click", () => {
@@ -118,21 +144,26 @@ function renderItem(
         new CustomEvent("cairn:edit", { bubbles: true, detail: item.id }),
       );
     });
-    li.append(editButton);
+    actions.append(editButton);
   }
 
   const confirmButton = document.createElement("button");
+  confirmButton.className = "btn btn-primary";
   confirmButton.textContent = "Confirm";
   confirmButton.disabled =
     item.status === "confirmed" || item.status === "dismissed";
   confirmButton.addEventListener("click", () => handlers.onConfirm(item.id));
-  li.append(confirmButton);
+  actions.append(confirmButton);
 
   const dismissButton = document.createElement("button");
+  dismissButton.className = "btn btn-danger";
   dismissButton.textContent = "Dismiss";
   dismissButton.disabled = item.status === "dismissed";
   dismissButton.addEventListener("click", () => handlers.onDismiss(item.id));
-  li.append(dismissButton);
+  actions.append(dismissButton);
+
+  footer.append(actions);
+  li.append(footer);
 
   return li;
 }
