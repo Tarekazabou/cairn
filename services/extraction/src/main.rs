@@ -10,6 +10,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use tower_http::cors::CorsLayer;
 
 use entities::{ExtractRequest, ExtractResponse};
 use llm::{LlmClient, LlmError};
@@ -35,9 +36,14 @@ async fn main() {
         llm: Arc::new(LlmClient::new(api_key, model)),
     };
 
+    // Permissive for now (no auth exists yet either — ADR-0001 open question).
+    // The extension calls this from a chrome-extension:// origin, which needs
+    // real CORS headers to read the response at all, not just host_permissions
+    // on the extension side. Tighten before any real deployment.
     let app = Router::new()
         .route("/health", get(health))
         .route("/extract", post(extract))
+        .layer(CorsLayer::permissive())
         .with_state(state);
 
     let port = std::env::var("EXTRACTION_SERVICE_PORT").unwrap_or_else(|_| "8080".to_string());

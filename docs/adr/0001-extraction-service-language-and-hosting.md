@@ -45,7 +45,15 @@ Verified independently of the Rust build (see below): a direct `curl` call to `h
 
 **Honest caveat, not yet resolved:** OpenRouter is a router in front of many underlying model providers, and free-tier models commonly have different (often looser) data-retention/training-use policies than paid ones. `docs/security/threat-model.md`'s "what happens to message content sent to the LLM provider" answer is **weaker** for a free model than it would be for a paid, DPA-backed one. This is acceptable for development/testing, given messages are still limited to conversations the user has opted in to — but **must be revisited before any real dogfooding on genuine colleague conversations**, not just before public beta.
 
+## Addendum — 2026-08-06: measured latency exceeds the product's own guardrail
+
+The full pipeline was run for real for the first time: the Rust service compiled and ran in a Linux container (this dev machine has no working Windows linker, so this was also the first real proof the binary works, not just that `cargo check` would if it could run), CORS was verified against a simulated `chrome-extension://` origin, and the extension's actual "Extract now" button was exercised against it.
+
+**Measured: a direct call to `/extract` with a realistic 5-message batch took ~53 seconds** on `openai/gpt-oss-20b:free` (a reasoning model — it thinks before answering, which costs real time). problem-statement.md §4's guardrail is explicit: extraction latency **<30s**, "slower than this and it's no longer part of the workflow." This model is already roughly **2x over that threshold on a normal-sized batch**, before accounting for free-tier rate limiting, which made repeated calls in the same session progressively slower — one browser-driven attempt didn't complete within 90s at all.
+
+This is a second, independent reason (alongside the data-retention caveat above) to move off this specific free model before real use — not just before beta, before dogfooding starts. A client-side timeout (60s, `apps/extension/src/extraction-client.ts`) was added so the UI fails with a clear message instead of hanging forever, but that's a backstop, not a fix — the real fix is a faster model or provider.
+
 ## Open questions
 
 - Hosting provider for `services/extraction` — not yet chosen. (Provider/model for the LLM call itself is chosen, above — this is about where the Rust binary runs.)
-- Whether to stay on a free OpenRouter model past initial development, given the data-policy caveat above.
+- Whether to stay on a free OpenRouter model past initial development — now backed by two independent findings against it: data-retention policy (previous addendum) and latency roughly 2x over the product's own guardrail (this addendum).
