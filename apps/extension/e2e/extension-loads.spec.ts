@@ -10,7 +10,22 @@ test("built extension loads without manifest errors and registers a service work
   expect(serviceWorker.url()).toContain("service-worker.js");
 });
 
-test("side panel seeds fixture data and renders the triage list", async ({
+test("side panel starts empty for a real user, with no default sample data", async ({
+  context,
+}) => {
+  let [serviceWorker] = context.serviceWorkers();
+  if (!serviceWorker) {
+    serviceWorker = await context.waitForEvent("serviceworker");
+  }
+  const extensionId = serviceWorker.url().split("/")[2];
+
+  const page = await context.newPage();
+  await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+  await expect(page.getByText("Nothing extracted yet.")).toBeVisible();
+  await expect(page.locator("li")).toHaveCount(0);
+});
+
+test("?seed=fixtures loads sample data and renders the triage list", async ({
   context,
 }) => {
   let [serviceWorker] = context.serviceWorkers();
@@ -25,7 +40,9 @@ test("side panel seeds fixture data and renders the triage list", async ({
     if (msg.type() === "error") consoleErrors.push(msg.text());
   });
 
-  await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+  await page.goto(
+    `chrome-extension://${extensionId}/sidepanel.html?seed=fixtures`,
+  );
   await page.waitForSelector("li");
 
   await expect(page.locator("li")).toHaveCount(3);
