@@ -1,3 +1,4 @@
+import type { Message } from "@cairn/adapters";
 import type { StoredItem } from "@cairn/core";
 import type { MessageLink } from "./storage.js";
 
@@ -46,4 +47,54 @@ export const FIXTURE_MESSAGE_LINKS: MessageLink[] = [
   { id: "fixture-m2", permalink: "https://chat.google.com/room/fixture/m2" },
   { id: "fixture-m3", permalink: "https://chat.google.com/room/fixture/m3" },
   { id: "fixture-m4", permalink: "https://chat.google.com/room/fixture/m4" },
+];
+
+/**
+ * A synthetic conversation for the "Extract now (test)" button — NOT real
+ * chat data, but real enough in shape to exercise the actual LLM call end to
+ * end (services/extraction has no idea this didn't come from Google Chat).
+ * Distinct from FIXTURE_ITEMS above: this is raw input to extraction, not a
+ * pre-made result.
+ */
+export const FIXTURE_RAW_MESSAGES: Message[] = [
+  {
+    id: "raw-m1",
+    conversationId: "fixture-conversation-2",
+    author: { id: "u-alice", displayName: "alice" },
+    text: "can someone look at the connector bug before Thursday?",
+    timestamp: new Date("2026-08-05T10:00:00.000Z"),
+    permalink: "https://chat.google.com/room/fixture2/raw-m1",
+  },
+  {
+    id: "raw-m2",
+    conversationId: "fixture-conversation-2",
+    author: { id: "u-bob", displayName: "bob" },
+    text: "yeah I will take it",
+    timestamp: new Date("2026-08-05T10:01:00.000Z"),
+    permalink: "https://chat.google.com/room/fixture2/raw-m2",
+  },
+  {
+    id: "raw-m3",
+    conversationId: "fixture-conversation-2",
+    author: { id: "u-alice", displayName: "alice" },
+    text: "and are we still rate-limiting the endpoint at 100 req/min?",
+    timestamp: new Date("2026-08-05T10:02:00.000Z"),
+    permalink: "https://chat.google.com/room/fixture2/raw-m3",
+  },
+  {
+    id: "raw-m4",
+    conversationId: "fixture-conversation-2",
+    author: { id: "u-carol", displayName: "carol" },
+    text: "yes, that's decided",
+    timestamp: new Date("2026-08-05T10:03:00.000Z"),
+    permalink: "https://chat.google.com/room/fixture2/raw-m4",
+  },
+  {
+    id: "raw-m5",
+    conversationId: "fixture-conversation-2",
+    author: { id: "u-bob", displayName: "bob" },
+    text: "does the migration need a maintenance window though?",
+    timestamp: new Date("2026-08-05T10:04:00.000Z"),
+    permalink: "https://chat.google.com/room/fixture2/raw-m5",
+  },
 ];

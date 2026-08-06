@@ -30,8 +30,11 @@ curl -s http://localhost:8080/extract \
 
 ## Local build status on this machine
 
-**Not verified locally as of this writing** — this development environment (Windows) has `rustc`/`cargo` installed via `rustup`, but no MSVC linker (Visual Studio Build Tools) or MinGW-w64, so `cargo build` fails at the link step for any crate with a build script (most of the dependency tree, via `reqwest`/`rustls`). `cargo check` doesn't avoid this either, since build scripts still need to compile and run. The GitHub Actions Rust job (`.github/workflows/ci.yml`, Linux) is what actually compiles and tests this crate — treat it as unverified until that job goes green.
+`cargo build`/`check` fail natively on this machine (Windows, `rustc`/`cargo` via `rustup`, no MSVC linker or MinGW-w64 — `cargo build` fails at the link step for any crate with a build script, which is most of the dependency tree via `reqwest`/`rustls`, and `cargo check` doesn't avoid it either since build scripts still need to run). `cargo fmt` and `cargo add` work fine (no linking involved).
 
-The OpenRouter API call itself **was** verified independently of Rust, via a direct `curl` request with the real model and a sample conversation — see ADR-0001's addendum. That confirms the provider/prompt/schema approach works; it doesn't confirm the Rust code compiles.
+**This has been run for real anyway**, twice, independently of native compilation:
 
-To fix local builds on Windows: install either the "Desktop development with C++" workload from Visual Studio Build Tools, or a MinGW-w64 GCC toolchain (`rustup target add x86_64-pc-windows-gnu` + a GCC install), then rebuild.
+- GitHub Actions (`.github/workflows/ci.yml`, Linux) compiles, lints, and tests it on every PR.
+- It's been built and actually run as a live process in a `rust:latest` Docker container on this machine (`docker run -v .:/app -w /app rust:latest cargo run`), with the real side panel hitting it over HTTP through real CORS — not just curl. See ADR-0001's 2026-08-06 addendum for what that run found (latency exceeding the product's own guardrail).
+
+To fix native Windows builds: install either the "Desktop development with C++" workload from Visual Studio Build Tools, or a MinGW-w64 GCC toolchain (`rustup target add x86_64-pc-windows-gnu` + a GCC install). Until then, Docker is the fastest way to actually run this service locally on this machine — see the command above.
